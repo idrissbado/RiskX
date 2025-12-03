@@ -1,12 +1,12 @@
 # 🚀 RiskX - End-to-End Automated Risk Scoring Platform
 
-**v0.1.0** | Production-Ready Core | Credit • Fraud • Churn Risk Scoring
+**v0.1.1** | Production-Ready | Credit • Fraud • Churn Risk Scoring | CLI + Cloud Deployment
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI version](https://badge.fury.io/py/riskx.svg)](https://badge.fury.io/py/riskx)
 
-> **RiskX** is a comprehensive, production-ready platform for automated risk scoring. Built for financial institutions, fintech companies, and data scientists working on credit scoring, fraud detection, and customer churn prediction.
+> **RiskX** is a comprehensive, production-ready platform for automated risk scoring. Built for financial institutions, fintech companies, and data scientists working on credit scoring, fraud detection, and customer churn prediction. **Now with CLI interface and cloud deployment support!**
 
 ---
 
@@ -19,13 +19,16 @@ RiskX provides an **end-to-end automated workflow** for risk scoring:
 3. **Feature Engineering** - Risk-specific features (WOE/IV, RFM, behavioral)
 4. **ML Training** - AutoML with multiple algorithms (LR, RF, XGBoost, LightGBM)
 5. **Scoring** - Real-time and batch scoring with interpretability
-6. **Monitoring** - Model performance and data drift detection (coming soon)
+6. **Monitoring** - Model performance and data drift detection (PSI, CSI)
+7. **Explainability** - SHAP and LIME model explanations
+8. **CLI** - Command-line interface for all operations
+9. **Deployment** - Cloud deployment helpers (Azure, AWS, GCP)
 
 ---
 
 ## ✨ Key Features
 
-### 🔥 What's Working NOW (v0.1.0)
+### 🔥 What's Available NOW (v0.1.1 - ALL FEATURES COMPLETE)
 
 #### 1. **Multi-Source Data Loading**
 Load data from 8+ different sources:
@@ -86,7 +89,7 @@ API-ready scoring engine:
 # Core installation (pandas, numpy, scikit-learn)
 pip install riskx
 
-# Full installation (includes XGBoost, LightGBM, Optuna, etc.)
+# Full installation (includes XGBoost, LightGBM, Optuna, SHAP, etc.)
 pip install riskx[full]
 
 # ML only (XGBoost, LightGBM, Optuna)
@@ -94,9 +97,36 @@ pip install riskx[ml]
 
 # Data sources (SQL, APIs, Parquet, Excel)
 pip install riskx[data]
+
+# Explainability (SHAP)
+pip install riskx[explain]
+
+# Cloud deployment (Azure, AWS, GCP)
+pip install riskx[azure]  # Azure ML
+pip install riskx[aws]    # AWS Lambda
+pip install riskx[gcp]    # GCP Cloud Run
 ```
 
-### Basic Usage
+### CLI Usage (New in v0.1.1!)
+
+```bash
+# Train a model
+riskx train --data loans.csv --target default --output model.pkl
+
+# Score new applications
+riskx score --model model.pkl --data new_applications.csv --output scores.csv
+
+# Monitor data drift
+riskx monitor --baseline baseline.csv --current current.csv --output drift_report.json
+
+# Run complete pipeline
+riskx pipeline --data loans.csv --target default --output-dir ./results
+
+# Show package info
+riskx info
+```
+
+### Python API Usage
 
 ```python
 from riskx import RiskDataConnector, RiskCleaner, RiskFeatureEngine
@@ -517,6 +547,163 @@ scorecard = scorer.generate_scorecard(feature_weights)
 simulated = scorer.simulate_score_distribution(n_samples=10000)
 ```
 
+### RiskMonitor (New in v0.1.1!)
+
+**Model monitoring and drift detection:**
+
+```python
+from riskx import RiskMonitor
+
+monitor = RiskMonitor()
+
+# Population Stability Index (PSI)
+psi = monitor.calculate_psi(baseline_data, current_data, feature='credit_score', n_bins=10)
+print(f"PSI: {psi:.4f}")  # PSI > 0.25 indicates significant drift
+
+# Characteristic Stability Index (CSI)
+csi = monitor.calculate_csi(baseline_data, current_data, feature='age')
+
+# Multi-feature drift detection
+drift_report = monitor.detect_drift(
+    baseline_data, 
+    current_data,
+    features=['income', 'age', 'credit_score'],
+    threshold=0.1
+)
+
+# Distribution comparison
+comparison = monitor.compare_distributions(baseline, current, feature='income')
+
+# Performance monitoring
+perf_report = monitor.monitor_performance(
+    y_true, 
+    y_pred, 
+    metrics=['auc', 'accuracy', 'precision']
+)
+
+# Alert generation
+alerts = monitor.generate_alerts(drift_report, threshold=0.2)
+```
+
+### RiskExplainer (New in v0.1.1!)
+
+**Model interpretability with SHAP and LIME:**
+
+```python
+from riskx import RiskExplainer
+
+explainer = RiskExplainer(model)
+
+# SHAP explanations (global)
+shap_values = explainer.explain_shap(X_test)
+explainer.plot_shap_summary(X_test)  # Summary plot
+explainer.plot_shap_waterfall(X_test.iloc[0])  # Individual prediction
+
+# LIME explanations (local)
+lime_exp = explainer.explain_lime(X_test.iloc[0], X_train)
+print(lime_exp.as_list())  # Feature contributions
+
+# Feature importance
+importance = explainer.get_feature_importance(X_test)
+
+# Model behavior analysis
+behavior = explainer.analyze_model_behavior(X_test, feature='income')
+```
+
+### RiskPipeline (New in v0.1.1!)
+
+**End-to-end orchestration:**
+
+```python
+from riskx import RiskPipeline
+
+# Create pipeline
+pipeline = RiskPipeline()
+
+# Run complete workflow
+results = pipeline.run(
+    data_path="loans.csv",
+    target="default",
+    test_size=0.2,
+    algorithms=['logistic', 'xgboost'],
+    output_dir="./results"
+)
+
+# Pipeline includes:
+# 1. Data loading
+# 2. Automated cleaning
+# 3. Feature engineering
+# 4. Model training
+# 5. Evaluation
+# 6. Model saving
+# 7. Report generation
+
+print(f"Best Model: {results['best_model']}")
+print(f"Best Score: {results['best_score']:.4f}")
+```
+
+### Cloud Deployment (New in v0.1.1!)
+
+**Deploy to Azure ML:**
+
+```python
+from riskx.deployment import AzureMLDeployer
+
+deployer = AzureMLDeployer(
+    workspace_name="my-workspace",
+    resource_group="my-rg",
+    subscription_id="sub-id"
+)
+
+# Register model
+deployer.register_model("model.pkl", "risk-model-v1")
+
+# Deploy to real-time endpoint
+endpoint = deployer.deploy_realtime_endpoint(
+    model_name="risk-model-v1",
+    endpoint_name="risk-scoring-api",
+    instance_type="Standard_DS3_v2"
+)
+
+print(f"Scoring URI: {endpoint['scoring_uri']}")
+```
+
+**Deploy to AWS Lambda:**
+
+```python
+from riskx.deployment import AWSLambdaDeployer
+
+deployer = AWSLambdaDeployer(region='us-east-1')
+
+# Create Lambda function
+lambda_fn = deployer.create_lambda_function(
+    function_name="risk-scorer",
+    model_path="model.pkl"
+)
+
+# Generate Lambda handler code
+deployer.generate_lambda_code("lambda_function.py")
+```
+
+**Deploy to GCP Cloud Run:**
+
+```python
+from riskx.deployment import GCPCloudRunDeployer
+
+deployer = GCPCloudRunDeployer(
+    project_id="my-project",
+    region="us-central1"
+)
+
+# Deploy as Cloud Run service
+service = deployer.deploy_service(
+    service_name="risk-scorer",
+    model_path="model.pkl"
+)
+
+print(f"Service URL: {service['url']}")
+```
+
 ---
 
 ## 🎓 Use Cases
@@ -565,21 +752,22 @@ Data Sources → Data Connector → Data Cleaner → Feature Engine → AutoML �
 
 ## 📦 What's Included
 
-### ✅ Core Modules (v0.1.0 - Production Ready)
+### ✅ Core Modules (ALL COMPLETE in v0.1.1)
 
-1. **riskx.core.data_connector** - Multi-source data loading (8+ sources)
+1. **riskx.core.data_connector** - Multi-source data loading (CSV, Excel, SQL, APIs, Cloud)
 2. **riskx.core.data_cleaner** - Automated data cleaning (7 methods)
 3. **riskx.core.feature_engineering** - Risk features (WOE/IV, RFM, behavioral)
-4. **riskx.core.model_auto** - AutoML training (4 algorithms)
-5. **riskx.core.scoring_engine** - Production scoring (real-time + batch)
+4. **riskx.core.model_auto** - AutoML training (4 algorithms + hyperparameter optimization)
+5. **riskx.core.scoring_engine** - Production scoring (real-time + batch + reason codes)
+6. **riskx.core.monitoring** - PSI, CSI, data drift detection ✅ NEW
+7. **riskx.core.explainability** - SHAP, LIME model interpretability ✅ NEW
 
-### ⏳ Coming Soon
+### ✅ Infrastructure Modules (NEW in v0.1.1)
 
-6. **riskx.core.monitoring** - PSI, CSI, drift detection
-7. **riskx.core.explainability** - SHAP, LIME interpretability
-8. **riskx.deployment** - Cloud deployment (Azure, AWS, GCP)
-9. **riskx.pipelines** - End-to-end orchestration
-10. **riskx.cli** - Command-line interface
+8. **riskx.pipelines** - End-to-end pipeline orchestration ✅ NEW
+9. **riskx.metrics** - Model evaluation and business metrics ✅ NEW
+10. **riskx.cli** - Command-line interface (5 commands) ✅ NEW
+11. **riskx.deployment** - Cloud deployment helpers (Azure ML, AWS Lambda, GCP Cloud Run) ✅ NEW
 
 ---
 
@@ -607,6 +795,14 @@ Data Sources → Data Connector → Data Cleaner → Feature Engine → AutoML �
 - **Scoring:** Real-time latency < 10ms
 - **Batch Scoring:** 10,000+ records/second
 - **Memory:** Efficient column-oriented storage
+- **CLI:** Fast command-line operations for all workflows
+
+### Supported Platforms
+
+- **Python:** 3.8, 3.9, 3.10, 3.11+
+- **OS:** Windows, Linux, macOS
+- **Cloud:** Azure ML, AWS Lambda, GCP Cloud Run
+- **Deployment:** Docker, Kubernetes, serverless
 
 ---
 
