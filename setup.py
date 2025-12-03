@@ -12,7 +12,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="riskx",
-    version="0.1.0",
+    version="0.1.1",
     author="Idriss Bado",
     author_email="idrissbadoolivier@gmail.com",
     description="End-to-End Automated Risk Scoring Platform for Credit, Fraud, and Churn Prediction",
@@ -65,12 +65,27 @@ setup(
         "explain": [
             "shap>=0.40.0",
         ],
+        "azure": [
+            "azure-ai-ml>=1.0.0",
+            "azure-identity>=1.10.0",
+        ],
+        "aws": [
+            "boto3>=1.20.0",
+        ],
+        "gcp": [
+            "google-cloud-run>=0.5.0",
+        ],
         "dev": [
             "pytest>=7.0.0",
             "pytest-cov>=3.0.0",
             "black>=22.0.0",
             "flake8>=4.0.0",
             "mypy>=0.950",
+        ],
+    },
+    entry_points={
+        "console_scripts": [
+            "riskx=riskx.cli.main:main",
         ],
     },
     keywords="risk-scoring credit-scoring fraud-detection ml automl risk-management financial-risk",

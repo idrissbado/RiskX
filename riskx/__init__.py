@@ -8,7 +8,7 @@ and underwriting automation.
 
 Author: Idriss Bado
 Email: idrissbadoolivier@gmail.com
-Version: 0.1.0
+Version: 0.1.1
 License: MIT
 """
 
@@ -22,7 +22,19 @@ from .core.explainability import RiskExplain
 from .pipelines.risk_pipeline import RiskPipeline
 from .metrics.evaluation import RiskEvaluator
 
-__version__ = "0.1.0"
+# CLI (optional)
+try:
+    from .cli.main import main as cli_main
+except ImportError:
+    cli_main = None
+
+# Deployment (optional - requires cloud SDKs)
+try:
+    from .deployment import AzureMLDeployer, AWSLambdaDeployer, GCPCloudRunDeployer
+except ImportError:
+    AzureMLDeployer = AWSLambdaDeployer = GCPCloudRunDeployer = None
+
+__version__ = "0.1.1"
 __author__ = "Idriss Bado"
 __email__ = "idrissbadoolivier@gmail.com"
 
@@ -35,5 +47,9 @@ __all__ = [
     "RiskMonitor",
     "RiskExplain",
     "RiskPipeline",
-    "RiskEvaluator"
+    "RiskEvaluator",
+    "cli_main",
+    "AzureMLDeployer",
+    "AWSLambdaDeployer",
+    "GCPCloudRunDeployer"
 ]

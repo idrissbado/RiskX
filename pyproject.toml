@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "riskx"
-version = "0.1.0"
+version = "0.1.1"
 description = "End-to-End Automated Risk Scoring Platform for Credit, Fraud, and Churn Prediction"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -34,6 +34,9 @@ dependencies = [
     "scikit-learn>=1.0.0",
 ]
 
+[project.scripts]
+riskx = "riskx.cli.main:main"
+
 [project.optional-dependencies]
 full = [
     "xgboost>=1.5.0",
@@ -58,6 +61,16 @@ data = [
 explain = [
     "shap>=0.40.0",
 ]
+azure = [
+    "azure-ai-ml>=1.0.0",
+    "azure-identity>=1.10.0",
+]
+aws = [
+    "boto3>=1.20.0",
+]
+gcp = [
+    "google-cloud-run>=0.5.0",
+]
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=3.0.0",
@@ -73,7 +86,7 @@ Repository = "https://github.com/idrissbado/RiskX"
 Issues = "https://github.com/idrissbado/RiskX/issues"
 
 [tool.setuptools]
-packages = ["riskx", "riskx.core"]
+packages = ["riskx", "riskx.core", "riskx.cli", "riskx.deployment", "riskx.pipelines", "riskx.metrics"]
 
 [tool.black]
 line-length = 100
